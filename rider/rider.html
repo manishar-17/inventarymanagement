@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rider Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f0f2f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background-color: #1e88e5;
+      color: white;
+      padding: 20px;
+      font-size: 22px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .container {
+      padding: 30px;
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 12px;
+      color: #2d3436;
+    }
+    .card p {
+      color: #636e72;
+      font-size: 15px;
+      margin: 6px 0;
+    }
+    .status {
+      padding: 6px 12px;
+      border-radius: 20px;
+      background-color: #ffeaa7;
+      display: inline-block;
+      font-weight: 600;
+      color: #d35400;
+    }
+    select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #00b894;
+      color: white;
+      border: none;
+      transition: background-color 0.3s;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #019875;
+    }
+    #map {
+      height: 300px;
+      width: 100%;
+      border-radius: 12px;
+      margin-top: 12px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+    }
+    th {
+      background-color: #0b63f6;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f1f1f1;
+    }
+    a.map-link {
+      color: #0b63f6;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .verify-checkbox {
+      transform: scale(1.2);
+    }
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>📦 Rider Dashboard</div>
+    <div>Welcome, Rider 🚴‍♂️</div>
+  </header>
+  <div class="container">
+    <div class="card">
+      <h2>📋 Today's Deliveries</h2>
+      <p>Total Assigned: <strong>12</strong></p>
+      <p>Completed: <strong>8</strong></p>
+      <p>Pending: <strong>4</strong></p>
+    </div>
+    <div class="card">
+      <h2>📦 Current Delivery</h2>
+      <p>Order ID: <strong>#ORD-98765</strong></p>
+      <p>Destination: <strong>Sector 18, Noida</strong></p>
+      <p>Status: <span class="status">Out for Delivery</span></p>
+    </div>
+    <div class="card">
+      <h2>🚦 Update Status</h2>
+      <select>
+        <option value="">Select Status</option>
+        <option value="picked">Picked Up</option>
+        <option value="on_the_way">On the Way</option>
+        <option value="delivered">Delivered</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      <button>Update</button>
+    </div>
+    <div class="card">
+      <h2>📍 Live Delivery Map</h2>
+      <div id="map"></div>
+    </div>
+    <div class="card" style="grid-column: 1 / -1;">
+      <h2>📑 Delivery List (Shortest Route)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Product ID</th>
+            <th>Product Name</th>
+            <th>Location</th>
+            <th>Verify</th>
+          </tr>
+        </thead>
+        <tbody id="deliveryTableBody">
+          <!-- Dynamic data loaded from backend -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
+  <script>
+    let map, riderMarker;
+
+    function initMap() {
+      const defaultLocation = { lat: 28.6139, lng: 77.2090 };
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: defaultLocation,
+        zoom: 12,
+      });
+      riderMarker = new google.maps.Marker({
+        position: defaultLocation,
+        map,
+        title: "Rider Location",
+        icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+      });
+      new google.maps.Marker({
+        position: { lat: 28.5355, lng: 77.3910 },
+        map,
+        title: "Delivery Location",
+        icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
+      });
+      updateRiderLocation();
+    }
+
+    function updateRiderLocation() {
+      setInterval(() => {
+        fetch('/api/rider-location')
+          .then(res => res.json())
+          .then(data => {
+            const newLatLng = new google.maps.LatLng(data.lat, data.lng);
+            riderMarker.setPosition(newLatLng);
+            map.panTo(newLatLng);
+          })
+          .catch(err => console.error('Location update failed:', err));
+      }, 10000);
+    }
+
+    function loadDeliveryList() {
+      fetch('/api/deliveries')
+        .then(res => res.json())
+        .then(data => {
+          const tableBody = document.getElementById('deliveryTableBody');
+          data.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${item.productId}</td>
+              <td>${item.productName}</td>
+              <td><a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(item.location)}" target="_blank" class="map-link">${item.location}</a></td>
+              <td><input type="checkbox" class="verify-checkbox" checked></td>
+            `;
+            tableBody.appendChild(row);
+          });
+        })
+        .catch(err => {
+          console.error('Failed to load deliveries:', err);
+          document.getElementById('deliveryTableBody').innerHTML = '<tr><td colspan="4">Failed to load data.</td></tr>';
+        });
+    }
+
+    window.onload = () => {
+      initMap();
+      loadDeliveryList();
+    };
+  </script>
+</body>
+</html>

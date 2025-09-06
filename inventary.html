@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login / Sign Up / Forgot Password</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      height: 100vh;
+      background: url('walmart 2.jpg') no-repeat center center fixed;
+      background-size: cover;
+      position: relative;
+      transition: background 0.6s ease-in-out;
+    }
+    body.dark-mode {
+      background: linear-gradient(135deg, #2c3e50, #4ca1af);
+    }
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      z-index: 0;
+      transition: background 0.6s ease-in-out;
+    }
+    body.dark-mode::before {
+      background: rgba(0, 0, 0, 0.5);
+    }
+    .left-section, .right-section {
+      position: relative;
+      z-index: 1;
+    }
+    .left-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .left-section img {
+      width: 300px;
+      margin-bottom: 20px;
+    }
+    .left-section h1 {
+      color: #0b98ec;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    .right-section {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .form-box {
+      width: 100%;
+      max-width: 400px;
+      padding: 30px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      transition: background 0.6s ease;
+    }
+    body.dark-mode .form-box {
+      background-color: #1f2c33;
+      color: #ecf0f1;
+    }
+    .form-box .logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+    .form-box .logo img {
+      width: 200px;
+    }
+    .form-box h2 {
+      font-size: 22px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .form-box p {
+      text-align: center;
+      color: #888;
+      margin-bottom: 30px;
+    }
+    .form-box input, .form-box select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .form-box button {
+      width: 100%;
+      padding: 12px;
+      background-color: #0b63f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+    .form-box .link {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    .form-box .link a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .form-box .readonly {
+      background-color: #f0f0f0;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="left-section">
+    <img src="98-logo.webp" />
+    <h1>SAVE MONEY.LIVE BETTER</h1>
+  </div>
+  <div class="right-section">
+    <div class="form-box">
+      <div class="logo">
+        <img src="wallmart logo.png" alt="Logo" />
+      </div>
+      <div id="loginForm">
+        <h2>Log in to your account</h2>
+        <p>Welcome back! Please enter your details.</p>
+        <input type="text" placeholder="User ID">
+        <div id="password-group">
+  <input type="password" id="password" placeholder="Enter Password">
+</div>
+        <button>Sign in</button>
+        <div class="link">
+          <a onclick="showForgot()">Forgot Password?</a><br>
+          Don't have an account? <a onclick="showSignup()">Sign up</a>
+        </div>
+      </div>
+      <div id="signupForm" style="display: none;">
+        <h2>Create your account</h2>
+        <p>Enter your details to sign up.</p>
+        <input type="email" placeholder="Enter your Email" id="emailInput">
+        <button onclick="sendOTP()">Send OTP</button>
+        <input type="text" placeholder="Enter OTP">
+        <input type="text" placeholder="Create User ID">
+        <select id="userRole">
+          <option value="" disabled selected>Select your role</option>
+          <option value="manager">Manager</option>
+          <option value="staff">Staff</option>
+          <option value="rider">Rider</option>
+        </select>
+        <input type="text" id="generatedPassword" class="readonly" readonly placeholder="Generated Password">
+        <button onclick="generatePassword()">Generate Password</button>
+        <button>Create Account</button>
+        <div class="link">Already have an account? <a onclick="showLogin()">Log in</a></div>
+      </div>
+      <div id="forgotForm" style="display: none;">
+        <h2>Forgot Password</h2>
+        <p>Reset your password using email verification.</p>
+        <input type="email" placeholder="Enter your registered Email">
+        <button onclick="alert('OTP sent to your email')">Send OTP</button>
+        <input type="text" placeholder="Enter OTP">
+        <input type="text" id="resetPassword" class="readonly" readonly placeholder="New Password">
+        <button onclick="generateResetPassword()">Generate New Password</button>
+        <button>Reset Password</button>
+        <div class="link">Back to <a onclick="showLogin()">Login</a></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function showSignup() {
+      hideAll();
+      document.getElementById('signupForm').style.display = 'block';
+    }
+    function showLogin() {
+      hideAll();
+      document.getElementById('loginForm').style.display = 'block';
+    }
+    function showForgot() {
+      hideAll();
+      document.getElementById('forgotForm').style.display = 'block';
+    }
+    function hideAll() {
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('signupForm').style.display = 'none';
+      document.getElementById('forgotForm').style.display = 'none';
+    }
+    function generatePassword() {
+      const pass = 'RST' + Math.random().toString(36).slice(-6);
+      document.getElementById('generatedPassword').value = pass;
+    }
+    function generateResetPassword() {
+      const pass = 'RST' + Math.random().toString(36).slice(-6);
+      document.getElementById('resetPassword').value = pass;
+    }
+    function sendOTP() {
+      const email = document.getElementById('emailInput').value;
+      if (!email) {
+        alert('Please enter your email first');
+      } else {
+        alert('OTP sent to ' + email);
+      }
+    }
+    // Auto toggle dark mode if fetched config says so
+    window.onload = async () => {
+      try {
+        const res = await fetch('/api/ui-theme');
+        const json = await res.json();
+        if (json.mode === 'dark') document.body.classList.add('dark-mode');
+      } catch (e) {
+        console.warn('Theme config not found');
+      }
+    };
+  </script>
+</body>
+</html>
