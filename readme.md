@@ -5,7 +5,7 @@ It represents a simple Inventory Management System interface with multiple pages
 
 ## 🚀 Live Demo
 Check out the live project here:  
-👉 [Inventory Management Website](https://manishar-17.github.io/inventorymanagement/)
+👉 [Inventory Management Website] (https://manishar-17.github.io/inventarymanagement//)
 
 ## 📂 Features
 - 📊 **Dashboard Page** – Overview of reports and stats  
